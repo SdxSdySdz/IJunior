@@ -537,7 +537,7 @@ MonoBehaviour:
   - {fileID: 992959727}
   - {fileID: 1736007048}
   - {fileID: 538771556}
-  _secondsBetweenSpawn: 1
+  _secondsBetweenSpawn: 2
 --- !u!4 &1560966249
 Transform:
   m_ObjectHideFlags: 0
