@@ -19,6 +19,5 @@ public class CoinSpawner : MonoBehaviour
 
             Instantiate(_coin, position, Quaternion.identity);
         }
-        
     }
 }

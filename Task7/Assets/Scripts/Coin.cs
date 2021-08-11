@@ -4,12 +4,8 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void Disappear()
     {
-        if (collision.gameObject.TryGetComponent(out Player player))
-        {
-            player.CollectCoin();
-            Destroy(gameObject);
-        }
+        Destroy(gameObject);
     }
 }

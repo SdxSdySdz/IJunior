@@ -2,19 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Animator), typeof(Rigidbody2D), typeof(SpriteRenderer))]
+[RequireComponent(typeof(Player), typeof(Rigidbody2D))]
 public class PlayerMover : MonoBehaviour
 {
-    
     [SerializeField] private float _speed = 5f;
     [SerializeField] private float _jumpForce = 10f;
     [SerializeField] private float _minGroundNormalY = .65f;
     [SerializeField] private float _gravityModifier = 1f;
     [SerializeField] private LayerMask _layerMask;
 
-    private Animator _animator;
+    private Player _player;
     private Rigidbody2D _rigidbody;
-    private SpriteRenderer _spriteRenderer;
     private RaycastHit2D[] _hitBuffer = new RaycastHit2D[16];
     private ContactFilter2D _contactFilter;
     private List<RaycastHit2D> _hitBufferList = new List<RaycastHit2D>();
@@ -26,30 +24,10 @@ public class PlayerMover : MonoBehaviour
     private const float _minMoveDistance = 0.001f;
     private const float _shellRadius = 0.01f;
 
-    private DirectionState MoveDirection 
-    { 
-        get
-        {
-            if (_targetVelocity.x > 0)
-            {
-                return DirectionState.Right;
-            }
-            else if (_targetVelocity.x < 0)
-            {
-                return DirectionState.Left;
-            }
-            else
-            {
-                return DirectionState.Undefined;
-            }
-        }
-    }
-
     private void OnEnable()
     {
-        _animator = GetComponent<Animator>();
+        _player = GetComponent<Player>();
         _rigidbody = GetComponent<Rigidbody2D>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Start()
@@ -62,15 +40,13 @@ public class PlayerMover : MonoBehaviour
     private void Update()
     {
         _targetVelocity = new Vector2(Input.GetAxis("Horizontal"), 0) * _speed;
-        _animator.SetBool("Run", _targetVelocity.x != 0);
+        _player.Run(_targetVelocity);
 
         if (Input.GetKeyDown(KeyCode.Space) && _isGrounded)
         {
-            _animator.SetTrigger("Jump");
+            _player.Jump();
             _velocity.y = _jumpForce;
         }
-        
-        OrientSprite();
     }
 
     private void FixedUpdate()
@@ -131,18 +107,6 @@ public class PlayerMover : MonoBehaviour
         }
 
         _rigidbody.position = _rigidbody.position + move.normalized * distance;
-    }
-
-    private void OrientSprite()
-    {
-        if (MoveDirection == DirectionState.Right)
-        {
-            _spriteRenderer.flipX = false;
-        }
-        else if (MoveDirection == DirectionState.Left)
-        {
-            _spriteRenderer.flipX = true;
-        }
     }
 
     private enum DirectionState
