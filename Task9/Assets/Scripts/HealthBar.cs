@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 [RequireComponent(typeof(Slider))]
 public class HealthBar : MonoBehaviour
 {
@@ -13,18 +12,15 @@ public class HealthBar : MonoBehaviour
     private Coroutine _changingValueCoroutine;
     private readonly float _changingValueSpeed = 5f;
 
-
     private void OnEnable()
     {
         _player.HealthChanged += OnValueChanged;
     }
 
-
     private void OnDisable()
     {
         _player.HealthChanged -= OnValueChanged;
     }
-
 
     private void Start()
     {
@@ -33,7 +29,6 @@ public class HealthBar : MonoBehaviour
         _slider.maxValue = _player.MaxHealth;
         _slider.value = _player.Health;
     }
-
 
     public void OnValueChanged()
     {
@@ -44,7 +39,6 @@ public class HealthBar : MonoBehaviour
 
         _changingValueCoroutine = StartCoroutine(ChangeSliderValue());
     }
-
 
     private IEnumerator ChangeSliderValue()
     {
