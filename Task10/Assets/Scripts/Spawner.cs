@@ -48,7 +48,7 @@ public class Spawner : MonoBehaviour
     {;
         Enemy enemy = Instantiate(_currentWave.Template, _spawnPoint.position, _spawnPoint.rotation, _spawnPoint).GetComponent<Enemy>();
         enemy.Init(_player);
-        enemy.Dying += OnEnemyDying;
+        enemy.Died += OnEnemyDying;
     }
 
     private void SetWave(int waveIndex)
@@ -64,7 +64,7 @@ public class Spawner : MonoBehaviour
 
     private void OnEnemyDying(Enemy enemy)
     {
-        enemy.Dying -= OnEnemyDying;
+        enemy.Died -= OnEnemyDying;
 
         _player.AddMoney(enemy.Reward);
     }
