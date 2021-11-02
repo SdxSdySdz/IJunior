@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Player), typeof(Rigidbody2D))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMover : MonoBehaviour
 {
     [SerializeField] private float _speed = 5f;
@@ -10,12 +10,11 @@ public class PlayerMover : MonoBehaviour
     [SerializeField] private float _minGroundNormalY = .65f;
     [SerializeField] private float _gravityModifier = 1f;
     [SerializeField] private LayerMask _layerMask;
-
-    private Player _player;
+    
     private Rigidbody2D _rigidbody;
-    private RaycastHit2D[] _hitBuffer = new RaycastHit2D[16];
+    private RaycastHit2D[] _hitBuffer;
     private ContactFilter2D _contactFilter;
-    private List<RaycastHit2D> _hitBufferList = new List<RaycastHit2D>();
+    private List<RaycastHit2D> _hitBufferList;
     private Vector2 _velocity;
     private Vector2 _targetVelocity;
     private Vector2 _groundNormal;
@@ -23,11 +22,15 @@ public class PlayerMover : MonoBehaviour
 
     private const float _minMoveDistance = 0.001f;
     private const float _shellRadius = 0.01f;
+    
+    public Vector2 Velocity => _velocity;
+    public bool IsGrounded => _isGrounded;
 
-    private void OnEnable()
+    private void Awake()
     {
-        _player = GetComponent<Player>();
         _rigidbody = GetComponent<Rigidbody2D>();
+        _hitBuffer = new RaycastHit2D[16];
+        _hitBufferList = new List<RaycastHit2D>();
     }
 
     private void Start()
@@ -40,11 +43,9 @@ public class PlayerMover : MonoBehaviour
     private void Update()
     {
         _targetVelocity = new Vector2(Input.GetAxis("Horizontal"), 0) * _speed;
-        _player.Run(_targetVelocity);
 
         if (Input.GetKeyDown(KeyCode.Space) && _isGrounded)
         {
-            _player.Jump();
             _velocity.y = _jumpForce;
         }
     }
@@ -107,13 +108,6 @@ public class PlayerMover : MonoBehaviour
         }
 
         _rigidbody.position = _rigidbody.position + move.normalized * distance;
-    }
-
-    private enum DirectionState
-    {
-        Right,
-        Left,
-        Undefined,
     }
 }
 
