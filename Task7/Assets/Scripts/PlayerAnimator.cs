@@ -1,6 +1,9 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMover))]
+[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(Animator))]
 public class PlayerAnimator : MonoBehaviour
 {
     private PlayerMover _playerMover;
@@ -27,17 +30,17 @@ public class PlayerAnimator : MonoBehaviour
         var velocity = _playerMover.Velocity;
         if (velocity.x == 0)
         {
-            _animator.SetBool("Run", false);
+            _animator.SetBool(PlayerAnimatorConstants.Run, false);
         }
         else
         {
-            _animator.SetBool("Run", true);
+            _animator.SetBool(PlayerAnimatorConstants.Run, true);
             _spriteRenderer.flipX = velocity.x < 0;
         }
     }
 
     private void Jump()
     {
-        _animator.SetTrigger("Jump");
+        _animator.SetTrigger(PlayerAnimatorConstants.Jump);
     }
 }

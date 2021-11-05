@@ -57,57 +57,88 @@ public class PlayerMover : MonoBehaviour
 
         _isGrounded = false;
 
-        Vector2 deltaPosition = _velocity * Time.deltaTime;
-        Vector2 moveAlongGround = new Vector2(_groundNormal.y, -_groundNormal.x);
-        Vector2 move = moveAlongGround * deltaPosition.x;
-
-        Movement(move, false);
-
-        move = Vector2.up * deltaPosition.y;
-
-        Movement(move, true);
+        MoveHorizontally();
+        MoveVertically();
     }
 
-    private void Movement(Vector2 move, bool yMovement)
+    private void MoveHorizontally()
     {
-        float distance = move.magnitude;
+        Vector2 deltaPosition = _velocity * Time.deltaTime;
+        Vector2 moveAlongGround = new Vector2(_groundNormal.y, -_groundNormal.x);
+        Vector2 direction = moveAlongGround * deltaPosition.x;
+        
+        Move(direction, false);
+    }
+
+    private void MoveVertically()
+    {
+        Vector2 deltaPosition = _velocity * Time.deltaTime;
+        Vector2 direction = Vector2.up * deltaPosition.y;
+        
+        Move(direction, true);
+    }
+    
+    private void Move(Vector2 direction, bool isGroundNormalRecalculatingRequired)
+    {
+        float distance = direction.magnitude;
 
         if (distance > _minMoveDistance)
         {
-            int count = _rigidbody.Cast(move, _contactFilter, _hitBuffer, distance + _shellRadius);
+            FillHitBufferByCast(direction, distance);
+            distance = RecalculateDistance(distance, direction, isGroundNormalRecalculatingRequired);
+        }
+            
+        _rigidbody.position += direction.normalized * distance;
+    }
 
-            _hitBufferList.Clear();
+    private void FillHitBufferByCast(Vector2 direction, float distance)
+    {
+        int count = _rigidbody.Cast(direction, _contactFilter, _hitBuffer, distance + _shellRadius);
 
-            for (int i = 0; i < count; i++)
-            {
-                _hitBufferList.Add(_hitBuffer[i]);
-            }
+        _hitBufferList.Clear();
 
-            foreach (var hit in _hitBufferList)
-            {
-                Vector2 currentNormal = hit.normal;
-                if (currentNormal.y > _minGroundNormalY)
-                {
-                    _isGrounded = true;
-                    if (yMovement)
-                    {
-                        _groundNormal = currentNormal;
-                        currentNormal.x = 0;
-                    }
-                }
+        for (int i = 0; i < count; i++)
+        {
+            _hitBufferList.Add(_hitBuffer[i]);
+        }
+    }
+    
+    private float RecalculateDistance(float distance, Vector2 direction, bool isGroundNormalRecalculatingRequired)
+    {
+        foreach (var hit in _hitBufferList)
+        {
+            Vector2 currentNormal = hit.normal;
+            
+            UpdateGroundedState(currentNormal, isGroundNormalRecalculatingRequired);
+            UpdateVelocity(currentNormal);
 
-                float projection = Vector2.Dot(_velocity, currentNormal);
-                if (projection < 0)
-                {
-                    _velocity = _velocity - projection * currentNormal;
-                }
-
-                float modifiedDistance = hit.distance - _shellRadius;
-                distance = Mathf.Min(distance, modifiedDistance);
-            }
+            float modifiedDistance = hit.distance - _shellRadius;
+            distance = Mathf.Min(distance, modifiedDistance);
         }
 
-        _rigidbody.position = _rigidbody.position + move.normalized * distance;
+        return distance;
+    }
+    
+    private void UpdateGroundedState(Vector2 normal, bool isGroundNormalRecalculatingRequired)
+    {
+        if (normal.y > _minGroundNormalY)
+        {
+            _isGrounded = true;
+            if (isGroundNormalRecalculatingRequired)
+            {
+                _groundNormal = normal;
+                normal.x = 0;
+            }
+        }
+    }
+    
+    private void UpdateVelocity(Vector2 normal)
+    {
+        float projection = Vector2.Dot(_velocity, normal);
+        if (projection < 0)
+        {
+            _velocity -= projection * normal;
+        }
     }
 }
 
