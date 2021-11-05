@@ -490,7 +490,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d926b5ccb0b544090a916ab8a9cfc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _coin: {fileID: 2381887889490402822, guid: 0fe6ba4c4039bee479bde4de7433b6f2, type: 3}
+  _coin: {fileID: 2381887889490402840, guid: 0fe6ba4c4039bee479bde4de7433b6f2, type: 3}
   _platforms:
   - {fileID: 1395070116}
   - {fileID: 877395434}
